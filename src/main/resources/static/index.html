@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroSpring IoC Framework</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #eee;
+            padding: 30px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        header h1 { font-size: 2.5rem; color: #e94560; margin-bottom: 8px; }
+        header p { color: #aaa; font-size: 1.1rem; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .card h2 { color: #e94560; margin-bottom: 16px; font-size: 1.2rem; }
+        .endpoint {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .method { color: #4ade80; font-weight: bold; font-size: 0.85rem; }
+        .path { color: #60a5fa; font-family: monospace; }
+        .desc { color: #aaa; font-size: 0.85rem; margin-top: 4px; }
+        .test-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: none;
+        }
+        .test-btn:hover { background: #c73652; }
+        .response-box {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #4ade80;
+            display: none;
+        }
+        input[type="text"] {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            color: white;
+            padding: 6px 10px;
+            width: 100%;
+            margin-top: 6px;
+            font-size: 0.9rem;
+        }
+        .badge {
+            display: inline-block;
+            background: #0f3460;
+            color: #60a5fa;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+        }
+        footer { text-align: center; margin-top: 40px; color: #666; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌊 MicroSpring IoC</h1>
+        <p>Framework web ligero basado en Reflexión y Anotaciones — AREP, Escuela Colombiana de Ingeniería</p>
+    </header>
+
+    <div class="grid">
+        <!-- HelloController -->
+        <div class="card">
+            <span class="badge">@RestController</span>
+            <h2>HelloController</h2>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <span class="path"> /hello</span>
+                <div class="desc">Saludo básico sin parámetros</div>
+                <button class="test-btn" onclick="testEndpoint('/hello', 'res-hello')">Probar</button>
+                <div class="response-box" id="res-hello"></div>
+            </div>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <span class="path"> /pi</span>
+                <div class="desc">Retorna el valor de π</div>
+                <button class="test-btn" onclick="testEndpoint('/pi', 'res-pi')">Probar</button>
+                <div class="response-box" id="res-pi"></div>
+            </div>
+        </div>
+
+        <!-- GreetingController -->
+        <div class="card">
+            <span class="badge">@RestController + @RequestParam</span>
+            <h2>GreetingController</h2>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <span class="path"> /greeting?name=...</span>
+                <div class="desc">Saludo personalizado con @RequestParam</div>
+                <input type="text" id="greeting-name" placeholder="Nombre (default: World)">
+                <button class="test-btn" onclick="testGreeting()">Probar</button>
+                <div class="response-box" id="res-greeting"></div>
+            </div>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <span class="path"> /greeting/formal?name=...</span>
+                <div class="desc">Saludo formal con contador atómico</div>
+                <button class="test-btn" onclick="testEndpoint('/greeting/formal', 'res-formal')">Probar</button>
+                <div class="response-box" id="res-formal"></div>
+            </div>
+        </div>
+
+        <!-- MathController -->
+        <div class="card">
+            <span class="badge">@RestController + Múltiples @RequestParam</span>
+            <h2>MathController</h2>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <span class="path"> /math/sqrt?value=...</span>
+                <div class="desc">Raíz cuadrada de un número</div>
+                <input type="text" id="sqrt-val" placeholder="Valor (default: 0)">
+                <button class="test-btn" onclick="testSqrt()">Probar</button>
+                <div class="response-box" id="res-sqrt"></div>
+            </div>
+
+            <div class="endpoint">
+                <span class="method">GET</span>
+                <span class="path"> /math/pow?base=...&exp=...</span>
+                <div class="desc">Potencia: base^exp</div>
+                <input type="text" id="pow-base" placeholder="Base (default: 2)">
+                <input type="text" id="pow-exp" placeholder="Exponente (default: 2)">
+                <button class="test-btn" onclick="testPow()">Probar</button>
+                <div class="response-box" id="res-pow"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Taller IoC — Samuel · AREP · Escuela Colombiana de Ingeniería Julio Garavito</p>
+    </footer>
+
+    <script>
+        async function testEndpoint(url, resultId) {
+            const box = document.getElementById(resultId);
+            box.style.display = 'block';
+            box.textContent = 'Cargando...';
+            try {
+                const res = await fetch(url);
+                const text = await res.text();
+                box.textContent = '→ ' + text;
+            } catch (e) {
+                box.textContent = 'Error: ' + e.message;
+                box.style.color = '#f87171';
+            }
+        }
+
+        async function testGreeting() {
+            const name = document.getElementById('greeting-name').value;
+            const url = name ? `/greeting?name=${encodeURIComponent(name)}` : '/greeting';
+            testEndpoint(url, 'res-greeting');
+        }
+
+        async function testSqrt() {
+            const val = document.getElementById('sqrt-val').value;
+            const url = val ? `/math/sqrt?value=${encodeURIComponent(val)}` : '/math/sqrt';
+            testEndpoint(url, 'res-sqrt');
+        }
+
+        async function testPow() {
+            const base = document.getElementById('pow-base').value;
+            const exp = document.getElementById('pow-exp').value;
+            let url = '/math/pow';
+            const params = [];
+            if (base) params.push('base=' + encodeURIComponent(base));
+            if (exp)  params.push('exp=' + encodeURIComponent(exp));
+            if (params.length) url += '?' + params.join('&');
+            testEndpoint(url, 'res-pow');
+        }
+    </script>
+</body>
+</html>
