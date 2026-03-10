@@ -98,3 +98,15 @@ areplab6/
         └── java/co/edu/escuelaing/microspring/
             └── MicroSpringTest.java
 
+
+
+## Probando funcionamiento desde el servidor:
+Primero probamos con http://44.222.68.35:8080/hello  
+![](img/hello.png)  
+Despues probamos con la direccion http://44.222.68.35:8080/greeting?name=Samuel, con mi nombre como un ejemplo  
+![](img/greeting.png)  
+Y para finalizar probamos con lo que sería la pantalla principal  
+![](img/paginainicial.png)  
+ Y aqui se muestra como se ejecutan las peticiones desde la consola del servidor
+ ![](img/muestraconsola.png)
+ 
